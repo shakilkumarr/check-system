@@ -1,11 +1,13 @@
+import SelectionContainer from '../SelectionContainer';
+
 import {
   Container
 } from './checkSystem.styles';
 
-const CheckSystem = () => {
-  return (
-    <Container />
-  )
-};
+const CheckSystem = () => (
+  <Container>
+    <SelectionContainer />
+  </Container>
+);
 
 export default CheckSystem;
