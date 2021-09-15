@@ -1,0 +1,4 @@
+# TO IGNORE ESLINT - CHECK
+/next.config.js
+/jsconfig.json
+/package.json
