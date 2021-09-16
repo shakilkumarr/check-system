@@ -1,12 +1,18 @@
 import SelectionContainer from '../SelectionContainer';
 
 import {
-  Container
+  Container,
+  Header,
+  BodyContainer,
+  Footer,
+  Button,
 } from './checkSystem.styles';
 
 const CheckSystem = () => (
   <Container>
-    <SelectionContainer />
+    <Header>CHECKS FOR THIS SESSION</Header>
+    <BodyContainer><SelectionContainer /></BodyContainer>
+    <Footer><Button>SUBMIT</Button></Footer>
   </Container>
 );
 

@@ -4,14 +4,13 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   opacity: ${props => props.isDisabled ? 0.5 : 1};
-  font-size: 1.8rem;
   letter-spacing: 0.08rem;
   margin-bottom: 2.8rem;
+  font-size: 1.6rem;
 `;
 
 export const Label = styled.div`
   margin-bottom: 1.2rem;
-  font-size: 2rem;
 `;
 
 export const RadioContainer = styled.div`
