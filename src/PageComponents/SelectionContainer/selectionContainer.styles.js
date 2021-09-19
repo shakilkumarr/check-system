@@ -4,9 +4,14 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   opacity: ${props => props.isDisabled ? 0.5 : 1};
+  pointer-events: ${props => props.isDisabled ? 'none' : 'auto'};
   letter-spacing: 0.08rem;
-  margin-bottom: 2.8rem;
   font-size: 1.6rem;
+  padding: 1.6rem 0.8rem;
+  background-color:${props => props.isActive && '#005f3859'};
+  &:hover {
+    background-color: ${props => !props.isActive && '#80808021'};
+  }
 `;
 
 export const Label = styled.div`

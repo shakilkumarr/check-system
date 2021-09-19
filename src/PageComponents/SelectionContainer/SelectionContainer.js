@@ -1,3 +1,8 @@
+import PropTypes from 'prop-types';
+import _map from 'lodash/map';
+
+import { description, id } from '../../base/checkList.reader';
+
 import {
   Container,
   Label,
@@ -6,14 +11,35 @@ import {
   CheckText,
 } from './selectionContainer.styles';
 
-const SelectionContainer = () => (
-  <Container>
-    <Label>Images not submitted as a slideshow</Label>
-    <RadioContainer>
-      <CheckColumns isBorderNeeded isSelected><CheckText>YES</CheckText></CheckColumns>
-      <CheckColumns><CheckText>NO</CheckText></CheckColumns>
-    </RadioContainer>
-  </Container>
-);
+const SelectionContainer = ({
+  checkLists, handleCheckListSelection, filledCheckListIds, currentRow,
+}) => {
+  const handleRadio = (targetStaus, targetIndex) => () => handleCheckListSelection(targetStaus, targetIndex);
+
+  return _map(checkLists, (checkListInfo, index) => (
+    <Container
+      key={id(checkListInfo)}
+      isDisabled={index > 0 && filledCheckListIds[index - 1] !== 1}
+      isActive={currentRow === index}
+    >
+      <Label>{description(checkListInfo)}</Label>
+      <RadioContainer >
+        <CheckColumns isBorderNeeded isSelected={checkListInfo.status === 1} onClick={handleRadio(1, index)}>
+          <CheckText>YES</CheckText>
+        </CheckColumns>
+        <CheckColumns isSelected={checkListInfo.status === 0} onClick={handleRadio(0, index)}>
+          <CheckText>NO</CheckText>
+        </CheckColumns>
+      </RadioContainer>
+    </Container>
+  ));
+};
+
+SelectionContainer.propTypes = {
+  checkLists: PropTypes.array.isRequired,
+  handleCheckListSelection: PropTypes.func.isRequired,
+  filledCheckListIds: PropTypes.object.isRequired,
+  currentRow: PropTypes.number.isRequired,
+}
 
 export default SelectionContainer;

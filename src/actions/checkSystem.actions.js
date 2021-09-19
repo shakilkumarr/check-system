@@ -1,7 +1,22 @@
-import axios from 'axios';
+import _map from 'lodash/map';
 
-const CHECK_LIST_URL = '/api/checkLists';
+import { priority } from '../base/checkList.reader';
+import {
+  checkLists, postCheckList,
+} from './checkSystem.api';
 
-export const getCheckLists = () => axios.get(CHECK_LIST_URL).then(({ data }) => data);
+const orderDataByPriority = checkListData => _map(checkListData.sort((a, b) => priority(a) - priority(b)), (checkListSortedData) => ({
+  ...checkListSortedData,
+  status: -1,
+}));
 
-export const updateCheckList = payload => axios.post(CHECK_LIST_URL, payload).then(({ data }) => data);
+const formattedPayload = checkListData => _map(checkListData, ({ id, status }) => ({
+  checkId: id,
+  value: status,
+}))
+
+export const getCheckLists = () => checkLists()
+  .then(({ data }) => orderDataByPriority(data.checkList))
+  .catch(() => { throw new Error() });
+
+export const submitCheckList = payload => postCheckList(formattedPayload(payload)).then(({ data }) => data);
