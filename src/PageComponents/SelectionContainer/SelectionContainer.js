@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import _map from 'lodash/map';
 
 import { description, id } from '../../base/checkList.reader';
 
@@ -16,7 +15,7 @@ const SelectionContainer = ({
 }) => {
   const handleRadio = (targetStaus, targetIndex) => () => handleCheckListSelection(targetStaus, targetIndex);
 
-  return _map(checkLists, (checkListInfo, index) => (
+  return checkLists.map((checkListInfo, index) => (
     <Container
       key={id(checkListInfo)}
       isDisabled={index > 0 && filledCheckListIds[index - 1] !== 1}

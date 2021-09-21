@@ -19,6 +19,8 @@ const DEFAULT_CHECK_LIST = [{
   description: "Document data is clearly visible"
 }];
 
-module.exports = {
-  DEFAULT_CHECK_LIST,
-};
+export default function handler(req, res) {
+  const responseToSend = req.method === 'POST' ? req.body : DEFAULT_CHECK_LIST;
+  if (Math.random() <= 0.8) res.status(200).send({ checkList: responseToSend })
+  else res.status(500).send({ message: 'Internal Server Error. Please Try Again' })
+}

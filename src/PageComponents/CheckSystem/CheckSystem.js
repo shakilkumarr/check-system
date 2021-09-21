@@ -1,9 +1,6 @@
 import React from 'react';
 import cogoToast from 'cogo-toast';
-
-import _map from 'lodash/map';
-import _keys from 'lodash/keys';
-import _values from 'lodash/values';
+import { usePartialState } from 'use-partial-state';
 
 import SelectionContainer from '../SelectionContainer';
 import ErrorComponent from '../ErrorComponent';
@@ -12,7 +9,7 @@ import { getCheckLists, submitCheckList } from '../../actions/checkSystem.action
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '../../base/constants';
 
 import { 
-  ROW_NAVIGATION, COL_NAVIGATION,
+  ROW_NAVIGATION, COL_NAVIGATION, DEFAULT_STATE_VALUES,
 } from './CheckSystem.constants';
 
 import {
@@ -25,26 +22,28 @@ import {
 } from './checkSystem.styles';
 
 const CheckSystem = () => {
-  const [checkLists, setCheckList] = React.useState(EMPTY_ARRAY);
-  const [isError, setErrorStatus] = React.useState(false);
-  const [filledCheckListIds, setFilledCheckIds] = React.useState(EMPTY_OBJECT);
-  const [isOnRequest, setRequestStatus] = React.useState(false);
-  const [currentRow, setCurrentRow] = React.useState(-1);
+  const [state, _, updateState] = usePartialState(DEFAULT_STATE_VALUES);
+  const {
+    checkLists,
+    isError,
+    filledCheckListIds,
+    isOnRequest,
+    currentRow,
+  } = state;
   const containerDiv = React.useRef(null);
   
   const updateCheckList = () => {
     if (isOnRequest) return;
-    setRequestStatus(true);
+    updateState({ isOnRequest: true });
     getCheckLists()
       .then((checkList) => {
-        setCheckList(checkList);
-        setErrorStatus(false);
+        updateState({ checkLists: checkList, isError: false });
       })
       .catch((err) => {
-        setErrorStatus(true);
+        updateState({ isError: true });
       })
       .finally(() => {
-        setRequestStatus(false);
+        updateState({ isOnRequest: false });
       });
   };
   
@@ -53,40 +52,44 @@ const CheckSystem = () => {
     containerDiv.current.focus();
   }, EMPTY_ARRAY);
 
-  const isFormFilled = React.useMemo(() => checkLists.length === _keys(filledCheckListIds).length || _values(filledCheckListIds).indexOf(0) > -1, [checkLists, filledCheckListIds]);
+  const isFormFilled = React.useMemo(() => checkLists.length === Object.keys(filledCheckListIds).length || Object.values(filledCheckListIds).indexOf(0) > -1, [checkLists, filledCheckListIds]);
 
-  const updateFilledCheckIds = (targetStatus, targetIndex, updatedCheckLists) => {
+  const getFilledCheckIds = (targetStatus, targetIndex, updatedCheckLists) => {
     const updatedFilledCheckIds = { ...filledCheckListIds, [targetIndex]: targetStatus };
     for (let i = targetIndex; i < checkLists.length - 1; i += 1) {
       if (updatedCheckLists[i + 1].status === -1) break;
       updatedFilledCheckIds[i + 1] = targetStatus;
     }
-    setFilledCheckIds(updatedFilledCheckIds);
+    return updatedFilledCheckIds;
   };
 
   const handleCheckListSelection = (targetStatus, targetIndex) => {
-    const updatedCheckLists = _map(checkLists, (checkListInfo, index) => {
+    const updatedCheckLists = checkLists.map((checkListInfo, index) => {
       if (index !== targetIndex) return checkListInfo;
       return ({
         ...checkListInfo,
         status: targetStatus,
       });
     });
-    updateFilledCheckIds(targetStatus, targetIndex, updatedCheckLists);
-    setCheckList(updatedCheckLists);
-    setCurrentRow(targetIndex);
+    updateState({
+      filledCheckListIds: getFilledCheckIds(targetStatus, targetIndex, updatedCheckLists),
+      checkLists: updatedCheckLists,
+      currentRow: targetIndex,
+    });
   };
 
   const resetFormValues = () => {
     if (isOnRequest) return;
-    setFilledCheckIds(EMPTY_OBJECT);
-    setCurrentRow(-1);
-    setCheckList(_map(checkLists, checkListInfo => ({ ...checkListInfo, status: -1 })));
+    updateState({
+      filledCheckListIds: EMPTY_OBJECT,
+      checkLists: checkLists.map(checkListInfo => ({ ...checkListInfo, status: -1 })),
+      currentRow: -1,
+    });
   };
 
   const handleSubmit = () => {
     if (isOnRequest || !isFormFilled) return;
-    setRequestStatus(true);
+    updateState({ isOnRequest: true });
     submitCheckList(checkLists)
       .then(() => {
         cogoToast.success('Your checklists has been submitted successfully!', { position: 'bottom-center' });
@@ -96,7 +99,7 @@ const CheckSystem = () => {
         cogoToast.error('There is some issue in posting your data. Please Try again!', { position: 'bottom-center' });
       })
       .finally(() => {
-        setRequestStatus(false);
+        updateState({ isOnRequest: false });
       })
   };
 
@@ -108,7 +111,7 @@ const CheckSystem = () => {
   const handleRowNavigation = (rowToUpdate) => {
     const rowIndexToHightlight = currentRow + rowToUpdate;
     if ((rowIndexToHightlight < 0 || rowIndexToHightlight >= checkLists.length) || (rowIndexToHightlight > 0 && filledCheckListIds[rowIndexToHightlight - 1] !== 1)) return;
-    setCurrentRow(rowIndexToHightlight);
+    updateState({ currentRow: rowIndexToHightlight });
   }
 
   const handleKeyUp = (ev) => {

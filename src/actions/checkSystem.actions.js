@@ -1,19 +1,17 @@
-import _map from 'lodash/map';
-
 import { priority } from '../base/checkList.reader';
 import {
   checkLists, postCheckList,
 } from './checkSystem.api';
 
-const orderDataByPriority = checkListData => _map(checkListData.sort((a, b) => priority(a) - priority(b)), (checkListSortedData) => ({
+const orderDataByPriority = checkListData => checkListData.sort((a, b) => priority(a) - priority(b)).map(checkListSortedData => ({
   ...checkListSortedData,
   status: -1,
 }));
 
-const formattedPayload = checkListData => _map(checkListData, ({ id, status }) => ({
+const formattedPayload = checkListData => checkListData.map(({ id, status }) => ({
   checkId: id,
   value: status,
-}))
+}));
 
 export const getCheckLists = () => checkLists()
   .then(({ data }) => orderDataByPriority(data.checkList))
