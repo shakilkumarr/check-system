@@ -53,10 +53,7 @@ const CheckSystem = () => {
     containerDiv.current.focus();
   }, EMPTY_ARRAY);
 
-  const isFormFilled = React.useMemo(() => {
-    if (checkLists.length === _keys(filledCheckListIds).length || _values(filledCheckListIds).indexOf(0) > -1) return true;
-    return false;
-  }, [checkLists, filledCheckListIds]);
+  const isFormFilled = React.useMemo(() => checkLists.length === _keys(filledCheckListIds).length || _values(filledCheckListIds).indexOf(0) > -1, [checkLists, filledCheckListIds]);
 
   const updateFilledCheckIds = (targetStatus, targetIndex, updatedCheckLists) => {
     const updatedFilledCheckIds = { ...filledCheckListIds, [targetIndex]: targetStatus };

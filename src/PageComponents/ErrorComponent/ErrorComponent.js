@@ -11,7 +11,7 @@ const ErrorComponent = ({ updateCheckList, isOnRequest }) => (
       isOnRequest ? <div>Loading...</div> : (
         <>
           <Error>There is some issue in fetching data</Error>
-          <TertiaryButton onClick={updateCheckList}>Please try again</TertiaryButton>
+          <TertiaryButton onClick={updateCheckList}>Click here to try again</TertiaryButton>
         </>
       )
     }

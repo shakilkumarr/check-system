@@ -22,7 +22,7 @@ export const RadioContainer = styled.div`
   display: flex;
   width: 12rem;
   height: 4rem;
-  border-radius: 5px;
+  border-radius: 0.5rem;
   border: 0.2rem solid #004F5F;
   cursor: pointer;
   color: #004F5F;
